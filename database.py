@@ -7,11 +7,11 @@ from sqlalchemy.dialects import postgresql
 Base = declarative_base()
 
 class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(60))
-    email = Column(String(60))
-    password = Column(String(60))
+     __tablename__ = 'users'
+     id = Column(Integer, primary_key=True)
+     name = Column(String(60))
+     email = Column(String(60))
+     password = Column(String(60))
 
 class Book(Base):
     __tablename__= 'books'
@@ -22,6 +22,7 @@ class Book(Base):
     publish_year= Column(String)
     plot = Column(String)
     rate = Column(Float)
+
 
 engine = create_engine('sqlite:///forum.db')
 Base.metadata.create_all(engine)

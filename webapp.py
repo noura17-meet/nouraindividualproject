@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request, redirect, url_for
+from flask import Flask, render_template,request, redirect, url_for, flash
 from database import *
 from flask import session as login_session
 from flask import g
@@ -11,6 +11,8 @@ Base.metadata.create_all(engine)
 DBsession = sessionmaker(bind=engine, autoflush = False)
 session = DBsession()
 @app.route('/')
+def mainpage():
+    return render_template('mainpage.html')
 @app.route('/signup', methods = ['GET','POST'])
 def sign_up():
     if request.method == "POST":
@@ -36,22 +38,30 @@ def sign_up():
 def signin():
     if request.method == 'GET':
         return render_template("signin.html")
-    elif request.method == 'POST':
+    else:
         email = request.form['email']
         password = request.form['password']
         if email is None or password is None:
             flash('Missing Arguments')
             return redirect(url_for('signin'))
-        if  verify_password  (email , password):
+        if  verify_password(email , password):
             user = session.query(User).filter_by(email=email).one()
             flash('Welcome, %s'% user.name)
             signin_session['name'] = user.name
             signin_session['email'] = user.email
             signin_session['id'] = user.id
             return redirect(url_for('mainpage'))
-    else:
+        else:
             flash('incorrect username/password')
-            return redirect(url_for(signin))
+            return redirect(url_for("signin"))
+
+def verify_password(email, password):
+    user_pass = session.query(User).filter_by(email = email).first()
+    if user_pass is None:
+        return False
+    if user_pass.email != password:
+        return False
+    return True
 
 @app.route('/book', methods= ['GET', 'POST'])
 def book():
